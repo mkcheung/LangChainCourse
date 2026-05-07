@@ -1,26 +1,31 @@
 from dotenv import load_dotenv
+
+load_dotenv()
+from langchain.agents import create_agent
+from langchain.tools import tool
+from langchain_core.messages import HumanMessage
 from langchain_openai import ChatOpenAI
 from langchain_ollama import ChatOllama
-from langchain_core.prompts import PromptTemplate
-load_dotenv()
 
-def main():
-    # print("Hello from langchain-course!")
-
-    summary_template = """ given the information {information} about a person I want you to create:
-    1. A short summary
-    2. two interesting facts about them
+def search(query: str) -> str:
     """
+    Tool that searches over internet
+    Args:
+        query: The query to search for 
+    Returns:
+        The search results
+    """
+    print(f"Searching for {query}")
+    return "Tokyo weather is sunny"
 
-    summary_prompt_template = PromptTemplate(input_variables=["information"], template=summary_template)
+# llm = ChatOpenAI(model='gpt-5')
+llm = ChatOllama(model="llama3.2")
+tools = [search]
+agent = create_agent(model=llm, tools=tools)
+def main():
+    print('Hello from langchain-course!')
+    result = agent.invoke({"messages":HumanMessage(content="What is the weather in Tokyo?")})
+    print(result)
 
-    # llm = ChatOpenAI(temperature=0, model="gpt-4o")
-    llm = ChatOllama(temperature=0, model="gemma3:270m")
-    chain = summary_prompt_template | llm
-
-    information = "Elon Musk is a billionaire entrepreneur known for Tesla and SpaceX."
-    response = chain.invoke(input={"information": information})
-    print(response.content)
-
-if __name__ == "__main__":
+if __name__ == '__main__':
     main()
