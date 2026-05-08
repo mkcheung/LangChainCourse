@@ -25,7 +25,8 @@ agent = create_agent(model=llm, tools=tools)
 def main():
     print('Hello from langchain-course!')
     result = agent.invoke({"messages":HumanMessage(content="What is the weather in Tokyo?")})
-    print(result)
+    for message in result["messages"]:
+        message.pretty_print()
 
 if __name__ == '__main__':
     main()
